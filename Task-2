@@ -59,7 +59,6 @@ namespace Task2
     {
         static void Main(string[] args)
         {
-            // Використання using — Dispose викликається автоматично
             using (Store store1 = new Store("Продукти24", "вул. Соборна, 1", StoreType.Grocery))
             {
                 store1.PrintInfo();

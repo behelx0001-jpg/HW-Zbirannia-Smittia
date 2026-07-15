@@ -1,0 +1,157 @@
+using System;
+
+namespace Task3
+{
+    class Play : IDisposable
+    {
+        public string Title { get; set; }
+        public string AuthorFullName { get; set; }
+        public string Genre { get; set; }
+        public int ReleaseYear { get; set; }
+
+        private bool disposed = false;
+
+        public Play(string title, string authorFullName, string genre, int releaseYear)
+        {
+            Title = title;
+            AuthorFullName = authorFullName;
+            Genre = genre;
+            ReleaseYear = releaseYear;
+            Console.WriteLine($"Створено об'єкт: {Title}");
+        }
+
+        public void PrintInfo()
+        {
+            if (disposed)
+                throw new ObjectDisposedException(Title);
+
+            Console.WriteLine($"Назва: {Title}, Автор: {AuthorFullName}, Жанр: {Genre}, Рік: {ReleaseYear}");
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed)
+                return;
+
+            if (disposing)
+            {
+                Console.WriteLine($"Ресурси об'єкта \"{Title}\" звільнено (Dispose)");
+            }
+
+            disposed = true;
+        }
+
+        // Деструктор — спрацює, якщо Dispose не було викликано
+        ~Play()
+        {
+            Console.WriteLine($"Деструктор викликано для об'єкта: {Title}");
+            Dispose(false);
+        }
+    }
+
+    // Завдання 3, частина 2: клас "Магазин" з деструктором
+    enum StoreType
+    {
+        Grocery,
+        Hardware,
+        Clothing,
+        Footwear
+    }
+
+    class Store : IDisposable
+    {
+        public string Name { get; set; }
+        public string Address { get; set; }
+        public StoreType Type { get; set; }
+
+        private bool disposed = false;
+
+        public Store(string name, string address, StoreType type)
+        {
+            Name = name;
+            Address = address;
+            Type = type;
+            Console.WriteLine($"Магазин \"{Name}\" створено");
+        }
+
+        public void PrintInfo()
+        {
+            if (disposed)
+                throw new ObjectDisposedException(Name);
+
+            Console.WriteLine($"Назва: {Name}, Адреса: {Address}, Тип: {Type}");
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed)
+                return;
+
+            if (disposing)
+            {
+                Console.WriteLine($"Ресурси магазину \"{Name}\" звільнено (Dispose)");
+            }
+
+            disposed = true;
+        }
+        ~Store()
+        {
+            Console.WriteLine($"Деструктор викликано для магазину: {Name}");
+            Dispose(false);
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("--- Тест П'єса з using (Dispose) ---");
+            using (Play play1 = new Play("Гамлет", "Вільям Шекспір", "Трагедія", 1601))
+            {
+                play1.PrintInfo();
+            }
+
+            Console.WriteLine("\n--- Тест П'єса без Dispose (спрацює деструктор) ---");
+            CreatePlayWithoutDispose();
+
+            Console.WriteLine("\n--- Тест Магазин з явним Dispose ---");
+            Store store1 = new Store("Взуттєвий світ", "вул. Незалежності, 5", StoreType.Footwear);
+            store1.PrintInfo();
+            store1.Dispose();
+
+            Console.WriteLine("\n--- Тест Магазин без Dispose (спрацює деструктор) ---");
+            CreateStoreWithoutDispose();
+
+            Console.WriteLine("\nПримусовий виклик збирача сміття");
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+            Console.WriteLine("\nКінець програми");
+            Console.ReadKey();
+        }
+
+        static void CreatePlayWithoutDispose()
+        {
+            Play tempPlay = new Play("Отелло", "Вільям Шекспір", "Трагедія", 1603);
+            tempPlay.PrintInfo();
+        }
+
+        static void CreateStoreWithoutDispose()
+        {
+            Store tempStore = new Store("Модний одяг", "вул. Центральна, 3", StoreType.Clothing);
+            tempStore.PrintInfo();
+        }
+    }
+}

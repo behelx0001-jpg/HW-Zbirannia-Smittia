@@ -1,0 +1,57 @@
+using System;
+
+namespace Task1
+{
+    class Play
+    {
+        public string Title { get; set; }
+        public string AuthorFullName { get; set; }
+        public string Genre { get; set; }
+        public int ReleaseYear { get; set; }
+
+        public Play(string title, string authorFullName, string genre, int releaseYear)
+        {
+            Title = title;
+            AuthorFullName = authorFullName;
+            Genre = genre;
+            ReleaseYear = releaseYear;
+            Console.WriteLine($"Створено об'єкт: {Title}");
+        }
+
+        public void PrintInfo()
+        {
+            Console.WriteLine($"Назва: {Title}, Автор: {AuthorFullName}, Жанр: {Genre}, Рік: {ReleaseYear}");
+        }
+
+        // Деструктор
+        ~Play()
+        {
+            Console.WriteLine($"Деструктор викликано для об'єкта: {Title}");
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Play play1 = new Play("Гамлет", "Вільям Шекспір", "Трагедія", 1601);
+            play1.PrintInfo();
+
+            CreateAndDestroyPlay();
+
+            Console.WriteLine("Примусовий виклик збирача сміття");
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+            Console.WriteLine("Кінець програми");
+            Console.ReadKey();
+        }
+
+        static void CreateAndDestroyPlay()
+        {
+            Play tempPlay = new Play("Ромео і Джульєтта", "Вільям Шекспір", "Трагедія", 1597);
+            tempPlay.PrintInfo();
+            // Об'єкт tempPlay стає недосяжним після виходу з методу
+        }
+    }
+}
